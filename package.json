@@ -1,0 +1,5 @@
+{
+  "name": "arrival-ugc-backend",
+  "private": true,
+  "engines": { "node": ">=18" }
+}
