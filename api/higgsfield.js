@@ -19,12 +19,16 @@ function getAuthHeader() {
     process.env.HIGGSFIELD_API_KEY_ID ||
     process.env.HIGGSFIELD_KEY_ID ||
     process.env.HIGGSFIELD_API_KEY ||
+    process.env.HIGGSFIELD_KEY ||
     process.env.HF_API_KEY;
   const secret =
     process.env.HF_API_KEY_SECRET ||
     process.env.HIGGSFIELD_API_KEY_SECRET ||
     process.env.HIGGSFIELD_KEY_SECRET ||
     process.env.HIGGSFIELD_API_SECRET ||
+    process.env.HIGGSFIELD_API_SECRET_KEY ||
+    process.env.HIGGSFIELD_SECRET_KEY ||
+    process.env.HIGGSFIELD_SECRET ||
     process.env.HF_API_SECRET ||
     process.env.HF_SECRET;
   if (id && secret) return `Key ${id}:${secret}`;
@@ -57,8 +61,11 @@ module.exports = async function handler(req, res) {
 
   const auth = getAuthHeader();
   if (!auth) {
+    // Names only, never values, so a naming mismatch is easy to spot.
+    const seen = Object.keys(process.env).filter(k => /^(HF_|HIGGSFIELD)/i.test(k));
     return res.status(500).json({
-      error: 'Server is missing Higgsfield credentials. Set HF_API_KEY_ID and HF_API_KEY_SECRET in Vercel.',
+      error: 'Server is missing Higgsfield credentials. Set HIGGSFIELD_API_KEY_ID and HIGGSFIELD_API_KEY_SECRET in Vercel. ' +
+        `Found: ${seen.length ? seen.join(', ') : 'none'}`,
     });
   }
 
